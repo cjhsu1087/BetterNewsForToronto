@@ -38,7 +38,7 @@ for submission in subreddit.get_new(limit=5):
     # print submission.title
 
     # If we haven't replied to this post before
-    if (submission.id not in posts_replied_to) and ('reddit' not in submission.url) and ('imgur' not in submission.url):
+    if (submission.id not in posts_replied_to) and ('reddit' not in submission.url):
         
         # Reply to the post 
         final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI\'m here to provide some information related to this post. Below are a few relevant links from other /r/Toronto wiki news sources. (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)' 
