@@ -43,12 +43,14 @@ for submission in subreddit.get_new(limit=5):
         print('gathered submission')
         # Reply to the post 
         final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI\'m here to provide some information related to this post. Below are a few relevant links from other news sources. (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)' 
-        g = pygoogle(submission.title)
-        g.pages = 2
+        g = pygoogle('Photo Album: Anti Uber protest at Nathan Phillips Square shut down by police')
+        g.pages = 3
         gDict = g.search()
         gTitles = gDict.keys()
         linkCount = 0;
         index = 0;
+
+        print('Title1: ' + gTitles[0])
         
         while (linkCount < 5):
             if (index >= len(gTitles)):
