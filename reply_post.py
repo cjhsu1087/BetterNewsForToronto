@@ -42,8 +42,7 @@ for submission in subreddit.get_new(limit=20):
 
         # Do a case insensitive search
         if re.search("torontosun", submission.url, re.IGNORECASE):
-            # Reply to the post 
-            preG = pygoogle(submission.url)  
+            # Reply to the post  
             g = pygoogle(submission.title)
             g.pages = 5
             gDict = g.search()
