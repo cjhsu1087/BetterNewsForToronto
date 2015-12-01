@@ -32,38 +32,35 @@ else:
         posts_replied_to = filter(None, posts_replied_to)
 
 # Get the top 5 values from our subreddit
-final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI\'m here to provide some info related to this post. Below are five related links from other news sources. (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)'
-subreddit = r.get_subreddit('pythonforengineers')
-for submission in subreddit.get_new(limit=20):
+final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI\'m here to provide some information related to this post. Below are five relevant links from other news sources. (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)'
+subreddit = r.get_subreddit('toronto')
+for submission in subreddit.get_new(limit=2):
     # print submission.title
 
     # If we haven't replied to this post before
-    if submission.id not in posts_replied_to:
-
-        # Do a case insensitive search
-        if re.search("www", submission.url, re.IGNORECASE):
-            # Reply to the post  
-            g = pygoogle(submission.title)
-            g.pages = 5
-            gDict = g.search()
-            gTitles = gDict.keys()
-            linkCount = 0;
-            index = 0;
+    if (submission.id not in posts_replied_to) and ('reddit' not in submission.url) and ('imgur' not in submission.url):
         
-            while (linkCount < 5):
-                compURL = gDict[gTitles[index]]
-                if (submission.url not in compURL) and ('reddit' not in compURL):
-                    final_message += '\n\n'+gTitles[index]+'\n'+gDict[gTitles[index]] 
-                    linkCount+=1
-                    index+=1
-                else:
-                    index+=1
+        # Reply to the post  
+        g = pygoogle(submission.title)
+        g.pages = 2
+        gDict = g.search()
+        gTitles = gDict.keys()
+        linkCount = 0;
+        index = 0;
+        
+        while (linkCount < 5):
+            compURL = gDict[gTitles[index]]
+            if (submission.url not in compURL) and ('reddit' not in compURL):
+                final_message += '\n\n'+gTitles[index]+'\n'+gDict[gTitles[index]] 
+                linkCount+=1
+                index+=1
+            else:
+                index+=1
 
-            submission.add_comment(final_message)
-            print "Bot replying to : ", submission.title
-
-            # Store the current id into our list
-            posts_replied_to.append(submission.id)
+        
+        print "Bot replying to : ", submission.title
+        submission.add_comment(final_message)
+        posts_replied_to.append(submission.id)
 
 # Write our updated list back to the file
 with open("posts_replied_to.txt", "w") as f:
