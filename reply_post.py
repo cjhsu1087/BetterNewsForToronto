@@ -32,7 +32,7 @@ else:
         posts_replied_to = filter(None, posts_replied_to)
 
 # Get the top 5 values from our subreddit
-final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI heard you guys don\'t like the Toronto Sun, so I\'m here to provide you some better options! Below are five related links that have nothing to do with the Toronto Sun! (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)'
+final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI\'m here to provide some info related to this post. Below are five related links from other news sources. (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)'
 subreddit = r.get_subreddit('pythonforengineers')
 for submission in subreddit.get_new(limit=20):
     # print submission.title
@@ -41,7 +41,7 @@ for submission in subreddit.get_new(limit=20):
     if submission.id not in posts_replied_to:
 
         # Do a case insensitive search
-        if re.search("torontosun", submission.url, re.IGNORECASE):
+        if re.search("www", submission.url, re.IGNORECASE):
             # Reply to the post  
             g = pygoogle(submission.title)
             g.pages = 5
@@ -49,10 +49,10 @@ for submission in subreddit.get_new(limit=20):
             gTitles = gDict.keys()
             linkCount = 0;
             index = 0;
-            excludeTorontoSun = 'torontosun'
+        
             while (linkCount < 5):
                 compURL = gDict[gTitles[index]]
-                if excludeTorontoSun not in compURL:
+                if (submission.url not in compURL) and ('reddit' not in compURL):
                     final_message += '\n\n'+gTitles[index]+'\n'+gDict[gTitles[index]] 
                     linkCount+=1
                     index+=1
