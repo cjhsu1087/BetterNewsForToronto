@@ -33,37 +33,41 @@ else:
 
 # Get the top 5 values from our subreddit
 
+whitelist = ['thestar', 'theglobeandmail', 'nationalpost', 'torontosun', 'macleans', 'metronews', 'nowtoronto', 'torontoist', 'blogto', 'cbc', '680news', 'citynews']
 subreddit = r.get_subreddit('toronto')
-for submission in subreddit.get_new(limit=2):
+for submission in subreddit.get_new(limit=5):
     # print submission.title
-
+    print ('start submissions')
     # If we haven't replied to this post before
-    if submission.id not in posts_replied_to:
-
-        # Do a case insensitive search
-        if ('reddit' not in submission.url) and ('imgur' not in submission.url):
-            # Reply to the post
-            print "Bot replying to : ", submission.title
-            final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI\'m here to provide some info related to this post. Below are five related links from other news sources. (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)'  
-            g = pygoogle(submission.title)
-            g.pages = 2
-            gDict = g.search()
-            gTitles = gDict.keys()
-            linkCount = 0;
-            index = 0;
+    if (submission.id not in posts_replied_to) and ('reddit' not in submission.url) and ('imgur' not in submission.url):
+        print('gathered submission')
+        # Reply to the post 
+        final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI\'m here to provide some information related to this post. Below are a few relevant links from other news sources. (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)' 
+        g = pygoogle(submission.title)
+        g.pages = 2
+        gDict = g.search()
+        gTitles = gDict.keys()
+        linkCount = 0;
+        index = 0;
         
-            while (linkCount < 5):
-                compURL = gDict[gTitles[index]]
-                if (submission.url not in compURL) and ('reddit' not in compURL):
-                    final_message += '\n\n'+gTitles[index]+'\n'+compURL
-                    linkCount+=1
-                    index+=1
-                else:
-                    index+=1
+        while (linkCount < 5):
+            if (index >= len(gTitles)):
+                break
+            compURL = gDict[gTitles[index]]
+            if (submission.url not in compURL) and ('reddit' not in compURL) and any(sub in compURL for sub in whitelist):
+                final_message += '\n\n'+gTitles[index]+'\n'+gDict[gTitles[index]] 
+                linkCount+=1
+                index+=1
+            else:
+                index+=1
+            
 
-            
-            
-            print(final_message)
+        
+        print "Bot replying to : ", submission.title
+        if (linkCount > 0):
+            print (final_message)
+        else:
+            print ("no results found")
 
 
 # Write our updated list back to the file

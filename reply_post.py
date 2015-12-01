@@ -32,34 +32,41 @@ else:
         posts_replied_to = filter(None, posts_replied_to)
 
 # Get the top 5 values from our subreddit
-final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI\'m here to provide some information related to this post. Below are five relevant links from other news sources. (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)'
+whitelist = ['thestar', 'theglobeandmail', 'nationalpost', 'torontosun', 'macleans', 'metronews', 'nowtoronto', 'torontoist', 'blogto', 'cbc', '680news', 'citynews']
 subreddit = r.get_subreddit('toronto')
-for submission in subreddit.get_new(limit=2):
+for submission in subreddit.get_new(limit=5):
     # print submission.title
 
     # If we haven't replied to this post before
     if (submission.id not in posts_replied_to) and ('reddit' not in submission.url) and ('imgur' not in submission.url):
         
-        # Reply to the post  
+        # Reply to the post 
+        final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI\'m here to provide some information related to this post. Below are a few relevant links from other /r/Toronto wiki news sources. (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)' 
         g = pygoogle(submission.title)
-        g.pages = 2
+        g.pages = 3
         gDict = g.search()
         gTitles = gDict.keys()
         linkCount = 0;
         index = 0;
         
         while (linkCount < 5):
+            if (index >= len(gTitles)):
+                break
             compURL = gDict[gTitles[index]]
-            if (submission.url not in compURL) and ('reddit' not in compURL):
+            if (submission.url not in compURL) and ('reddit' not in compURL) and any(sub in compURL for sub in whitelist):
                 final_message += '\n\n'+gTitles[index]+'\n'+gDict[gTitles[index]] 
                 linkCount+=1
                 index+=1
             else:
                 index+=1
+            
 
         
         print "Bot replying to : ", submission.title
-        submission.add_comment(final_message)
+        if (linkCount > 0):
+            submission.add_comment(final_message)
+        else:
+            print ("no results found")
         posts_replied_to.append(submission.id)
 
 # Write our updated list back to the file
