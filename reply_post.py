@@ -32,7 +32,7 @@ else:
         posts_replied_to = filter(None, posts_replied_to)
 
 # Get the top 5 values from our subreddit
-final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI heard you guys don\'t like the Toronto Sun, so I\'m here to provide you some better options! Below are five related links that have nothing to do with the Toronto Sun! (Links are not guaranteed to be news articles...sorry!)'
+final_message = 'Hi there! This is the BetterNewsForToronto bot!\n\nI heard you guys don\'t like the Toronto Sun, so I\'m here to provide you some better options! Below are five related links that have nothing to do with the Toronto Sun! (Links are not guaranteed to be news articles...sorry! Bot results depend on the post\'s title.)'
 subreddit = r.get_subreddit('pythonforengineers')
 for submission in subreddit.get_new(limit=20):
     # print submission.title
@@ -42,7 +42,8 @@ for submission in subreddit.get_new(limit=20):
 
         # Do a case insensitive search
         if re.search("torontosun", submission.url, re.IGNORECASE):
-            # Reply to the post   
+            # Reply to the post 
+            preG = pygoogle(submission.url)  
             g = pygoogle(submission.title)
             g.pages = 5
             gDict = g.search()
